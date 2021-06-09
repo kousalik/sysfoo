@@ -35,24 +35,24 @@ pipeline {
         }
       }
       steps {
-        when {
-          branch 'master'
-        }
         echo 'Packaging'
         sh 'mvn package -DskipTests=true'
         archiveArtifacts 'target/*.war'
       }
     }
     stage('Docker BnP') {
+      when {
+          branch 'master'
+      }
+      agent any
       steps {
         script {
           docker.withRegistry('https://index.docker.io/v1/', 'dockerlogin') {
-            def dockerImage = docker.build("kousalix/sysfoo:v${env.BUILD_ID}", "./")
+            def dockerImage = docker.build("kousalix/sysfoo:v${env.BUILD_ID}", './')
             dockerImage.push()
-            dockerImage.push("latest")
+            dockerImage.push('latest')
           }
         }
-
       }
     }
   }
