@@ -6,7 +6,6 @@ pipeline {
         docker {
           image 'maven:3.6.3-jdk-11-slim'
         }
-
       }
       steps {
         echo 'Compiling'
@@ -19,7 +18,6 @@ pipeline {
         docker {
           image 'maven:3.6.3-jdk-11-slim'
         }
-
       }
       steps {
         echo 'Testing'
@@ -28,19 +26,23 @@ pipeline {
     }
 
     stage('package') {
+      when {
+        branch 'master'
+      }
       agent {
         docker {
           image 'maven:3.6.3-jdk-11-slim'
         }
-
       }
       steps {
+        when {
+          branch 'master'
+        }
         echo 'Packaging'
         sh 'mvn package -DskipTests=true'
         archiveArtifacts 'target/*.war'
       }
     }
-
   }
   tools {
     maven 'Maven 3.6.3'
